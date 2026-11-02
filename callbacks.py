@@ -15,6 +15,20 @@ router = Router()
 
 
 
+@router.callback_query(F.data.startswith("dish:"))
+async def details(callback: CallbackQuery):
+    await callback.answer()
+    dish_id = int(callback.data.split(":")[1])
+    dish = await get_dish_by_id(dish_id)
+    if not dish:
+        return await callback.message.answer("Такого блюдо нету😭")
+    await callback.message.answer_photo(
+        photo=dish["photo_file_id"],
+        caption=f"""
+Title: {dish['title']}
+Description:  {dish['description']}
+Цена: {dish['price']}"""
+)
 
 
 

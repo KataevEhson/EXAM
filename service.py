@@ -70,10 +70,30 @@ insert into dishes (title, price, description, photo_file_id) VALUES
 
 
 
+async def menu_service():
+    try:
+        conn = await connection_db()
+        a =await conn.fetch("""
+SELECT * FROM dishes
+""")
+        return a
+    except Exception as error:
+        print("Menu erorr:", error)
+    finally:
+        await conn.close()
 
 
 
 
+async def get_dish_by_id(dish_id):
+    conn = await connection_db()
+    try:
+        return await conn.fetchrow("""
+SELECT * FROM dishes 
+WHERE id = $1
+""", dish_id)
+    finally:
+        await conn.close()
 
 
 

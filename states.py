@@ -97,6 +97,25 @@ async def get_file_photo_id_state(message : Message , state : FSMContext):
 
 
 
+@router.message(F.text == "menu")
+@router.message(Command("menu"))
+async def menu(message: Message):
+    dishes = await menu_service()
+    if not dishes:
+        return await message.answer("Сорян покачто наш могозин пуст🏪")
+
+    for dish in dishes:
+        buttons = InlineKeyboardMarkup(inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="Подробнее",
+                    callback_data=f"dish:{dish['id']}"
+                ),
+
+            ]
+        ])
+
+        await message.answer(dish["title"], reply_markup=buttons)
 
 
 

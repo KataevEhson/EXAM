@@ -28,11 +28,15 @@ class Add_dish(StatesGroup):
     get_photo_file_id = State()
 
 
+class Dish(StatesGroup):
+    get_dish_id = State()
 
 
 
 
 
+class SHow_info_of_dish(StatesGroup):
+    get_dish_id = State()
 
 
 @router.message(F.text == "add_dish")
@@ -163,6 +167,11 @@ async def show_cart(message: Message):
 
 
 
+@router.message(F.text == "clear_cart")
+@router.message(Command("clear_cart"))
+async def clear_cart(message: Message):
+    await clear_my_cart_service(message.from_user.id)
+    await message.answer("🛒 Корзина очищена")
 
 
 
@@ -175,10 +184,33 @@ async def show_cart(message: Message):
 
 
 
+@router.message(F.text == "dish")
+@router.message(Command("dish"))
+async def menu(message: Message):
+    dishes = await menu_service()
+
+    for dish in dishes:
+        buttons = InlineKeyboardMarkup(inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="Подробнее",
+                    callback_data=f"dish:{dish['id']}"
+                ),
+            ]
+        ])
+
+        await message.answer(dish["title"], reply_markup=buttons)
 
 
 
 
+@router.message(Command("cart_stats"))
+async def cart_stats(message: Message):
+    data = await cart_stats_service(message.from_user.id)
+    await message.answer(f"""
+Количество порции из разных блюд: {data['a1']}
+Количество блюд: {data['a2']}
+    """)
 
 
 

@@ -157,6 +157,18 @@ async def delete_cart_item(dish_id, tg_id):
 
 
 
+async def show_all_for_buttons_service(dish_id):
+    try:
+        conn = await connection_db()
+        a1 = await conn.fetch("""
+SELECT * FROM dishes
+WHERE id = $1
+""", dish_id)
+        return a1
+    except Exception as error:
+        print("Show buttons error:", error)
+    finally:
+        await conn.close()
 
 
 
@@ -179,6 +191,17 @@ WHERE user_id = $1
 
 
 
+async def clear_my_cart_service(user_id):
+    try:
+        conn = await connection_db()
+        await conn.execute("""
+DELETE FROM cart_items
+WHERE user_id = $1
+""", user_id)
+    except Exception as erorr:
+        print("Delete cart erorr:", erorr)
+    finally:
+        await conn.close()
 
 
 
@@ -188,8 +211,29 @@ WHERE user_id = $1
 
 
 
+async def dish_info_for_button():
+    try:
+        conn = await connection_db()
+        a1 = await conn.fetch("""
+SELECT * FROM dish
+""")
+        return a1
+    except Exception as erorr:
+        print("Show dish info erorr:", erorr)
+    finally:
+        await conn.close()
 
 
 
 
 
+async def cart_stats_service(user_id):
+    conn = await connection_db()
+    try:
+        data = await conn.fetchrow("""
+SELECT SUM(quantity) as a1, COUNT(*) as a2 FROM cart_items
+WHERE user_id = $1
+""", user_id)
+        return data
+    finally:
+        await conn.close()

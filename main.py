@@ -2,8 +2,6 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message
 from aiogram.filters import Command, CommandStart
 from dotenv import load_dotenv
-from states import router as state_router
-from callbacks import router as callback_router
 from conection import *
 from kayboards import *
 from service import *
@@ -88,8 +86,6 @@ async def help_user_main(message : Message):
 async def main():
     await create_table()
     print("Bot started")
-    dp.include_router(state_router)
-    dp.include_router(callback_router)
     await dp.start_polling(bot)
     
     

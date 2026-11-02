@@ -33,24 +33,6 @@ CREATE TABLE if not exists users (
     is_active boolean default true
 );
 
-CREATE TABLE if not exists dishes (
-    id serial primary key,
-    title varchar(255) not null,
-    price int not null,
-    description text,
-    photo_file_id varchar(300),
-    created_at timestamp default now(),
-    is_active boolean default true
-);
-
-CREATE TABLE if not exists cart_items (
-    id serial primary key,
-    user_id bigint not null unique,
-    dish_id INTEGER not null REFERENCES dishes(id) unique,
-    quantity INTEGER not null check (quantity >= 1),
-    created_at timestamp default now(),
-    is_active boolean default true
-)
       """)
         print("Table created")
     except Exception as Error:

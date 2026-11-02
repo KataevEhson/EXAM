@@ -111,7 +111,23 @@ async def menu(message: Message):
                     text="Подробнее",
                     callback_data=f"dish:{dish['id']}"
                 ),
-
+                InlineKeyboardButton(
+                    text="🛒 Добавить",
+                    callback_data=f"cart:{dish['id']}"
+                ),
+                InlineKeyboardButton(
+                    text="➕",
+                    callback_data=f"plus:{dish['id']}"
+                ),
+                InlineKeyboardButton(
+                    text="➖",
+                    callback_data=f"minus:{dish['id']}"
+                ),
+                    InlineKeyboardButton(
+                    text="🗑 Удалить",
+                    callback_data=f"delete:{dish['id']}"
+                )
+                
             ]
         ])
 
@@ -127,6 +143,23 @@ async def menu(message: Message):
 
 
 
+@router.message(F.text == "cart")
+@router.message(Command("cart"))
+async def show_cart(message: Message):
+    data = await show_cart_service(message.from_user.id)
+    total = 0
+    await message.answer("Твоя корзина")
+    for i in data:
+        cost = i["price"] * i["quantity"]
+        total += cost
+
+        await message.answer(f"""
+Продукт: {i['title']}
+Цена: {i['price']}
+Количество: {i['quantity']}
+        """)
+
+    await message.answer(f"💰 Общая стоимость: {total} сомони")
 
 
 

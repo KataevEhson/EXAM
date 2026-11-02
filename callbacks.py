@@ -33,6 +33,32 @@ Description:  {dish['description']}
 
 
 
+@router.callback_query(F.data.startswith("cart:"))
+async def add_to_cart(callback: CallbackQuery):
+    dish_id = int(callback.data.split(":")[-1])
+    tg_id = callback.from_user.id
+    await add_to_card_service(tg_id, dish_id, 1)
+    await callback.answer("Товар успешно добавлен в вашу корзинку 👌🏿")
+
+
+
+@router.callback_query(F.data.startswith("plus:"))
+async def add_to_cart(callback: CallbackQuery):
+    dish_id = int(callback.data.split(":")[-1])
+    tg_id = callback.from_user.id
+    await plus_quantity(dish_id, tg_id)
+    await callback.answer("Quantity update successul")
+
+
+
+@router.callback_query(F.data.startswith("minus:"))
+async def add_to_cart(callback: CallbackQuery):
+    dish_id = int(callback.data.split(":")[-1])
+    tg_id = callback.from_user.id
+    if await minus_quantity(dish_id, tg_id):
+        await callback.answer("Опирация успешно виполнено 👌🏿 ")
+    else:
+        await callback.answer("Количество не модет быт ниже нуля")
 
 
 
@@ -40,9 +66,9 @@ Description:  {dish['description']}
 
 
 
-
-
-
-
-
-
+@router.callback_query(F.data.startswith("delete:"))
+async def add_to_cart(callback: CallbackQuery):
+    dish_id = int(callback.data.split(":")[-1])
+    tg_id = callback.from_user.id
+    await delete_cart_item(dish_id, tg_id)
+    await callback.answer("Продукт убран из корзины успешно!!!")

@@ -12,6 +12,20 @@ router = Router()
 
 
 
+@router.message(F.text == "cancel")
+@router.message(Command("cancel"))
+async def cancel_input(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer("Ваша операция отменена")
+
+
+
+
+class Add_dish(StatesGroup):
+    get_title = State()
+    get_price = State()
+    get_description = State()
+    get_photo_file_id = State()
 
 
 
@@ -21,16 +35,56 @@ router = Router()
 
 
 
+@router.message(F.text == "add_dish")
+@router.message(Command("add_dish"))
+async def start_get_information(message : Message , state : FSMContext):
+    status = await check_admin(message.from_user.id)
+    if status:
+        await message.answer("Введите название товара: ")
+        await state.set_state(Add_dish.get_title)
+    else:
+        print("ты не админ уйди отсюда")
+        await state.clear()
+
+@router.message(Add_dish.get_title)
+async def get_title_state(message : Message , state : FSMContext):
+    await state.update_data(title = message.text)
+    await message.answer("Введите цену товара: ")
+    await state.set_state(Add_dish.get_price)
 
 
+@router.message(Add_dish.get_price)
+async def get_price_state(message : Message , state : FSMContext):
+    try:
+        price = int(message.text)
+        if price <=0:
+            return await message.answer("Цуна должно не может быт отрицателным")
+        await state.update_data(price = price)
+        await message.answer("Введите описание товара: ")
+        await state.set_state(Add_dish.get_description)
+    except:
+        return await message.answer("Ошибка ввода попытайтесъ снова: ")
 
 
+@router.message(Add_dish.get_description)
+async def het_title_state(message : Message , state : FSMContext):
+    await state.update_data(description = message.text)
+    await message.answer("Скинте фото товара пожалуйста: ")
+    await state.set_state(Add_dish.get_photo_file_id)
 
-
-
-
-
-
+@router.message(Add_dish.get_photo_file_id)
+async def get_file_photo_id_state(message : Message , state : FSMContext):
+    if not message.photo:
+            await message.answer("Вы отправили не фото пожайлусто отправте фото блюда")
+            return None
+    photo = message.photo[-1]
+    await state.update_data(file_id = photo.file_id)
+    data = await state.get_data()
+    if await add_dish_service(data['title'], data['price'], data['description'], data['file_id']):
+        await message.answer("Блюдо добавлено удачно")
+    else:
+        await message.answer("При добовлении блюда произошла ошибка")
+    await state.clear()
 
 
 

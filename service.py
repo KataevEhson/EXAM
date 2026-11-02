@@ -51,6 +51,18 @@ async def check_admin(telegram_id):
 
 
 
+async def add_dish_service(title, price, description, photo_file_id):
+    try:
+        conn = await connection_db()
+        await conn.execute("""
+insert into dishes (title, price, description, photo_file_id) VALUES
+($1, $2, $3, $4)
+""", title, int(price), description, photo_file_id)
+        return True
+    except Exception as error:
+        print("Add dish error:", error)
+    finally:
+        await conn.close()
 
 
 

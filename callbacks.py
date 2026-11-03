@@ -22,13 +22,27 @@ async def details(callback: CallbackQuery):
     dish = await get_dish_by_id(dish_id)
     if not dish:
         return await callback.message.answer("Такого блюдо нету😭")
+    buttons = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🛒 Добавить",callback_data=f"cart:{dish['id']}")],
+        
+        [InlineKeyboardButton(text="➕",callback_data=f"plus:{dish['id']}")],
+
+        [InlineKeyboardButton(text="➖",callback_data=f"minus:{dish['id']}")],
+
+        [InlineKeyboardButton(text="🗑 Удалить",callback_data=f"delete:{dish['id']}")],
+
+        [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel:")]
+    ])
     await callback.message.answer_photo(
         photo=dish["photo_file_id"],
         caption=f"""
 Title: {dish['title']}
 Description:  {dish['description']}
-Цена: {dish['price']}"""
-)
+Цена: {dish['price']}""",
+        reply_markup=buttons,)
+
+
+
 
 
 
@@ -72,3 +86,28 @@ async def add_to_cart(callback: CallbackQuery):
     tg_id = callback.from_user.id
     await delete_cart_item(dish_id, tg_id)
     await callback.answer("Продукт убран из корзины успешно!!!")
+
+
+
+
+@router.callback_query(F.data.startswith("dish_"))
+async def details(callback: CallbackQuery):
+    await callback.answer()
+    dish_id = int(callback.data.split("_")[-1])
+    dish = await get_dish_by_id(dish_id)
+    buttons = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel:")]
+        ])
+    await callback.message.answer_photo(
+        photo=dish["photo_file_id"],
+        caption=f"""
+Title: {dish['title']}
+Description:  {dish['description']}
+Цена: {dish['price']}""",reply_markup=buttons)
+
+
+
+
+@router.callback_query(F.data.startswith("cancel:"))
+async def cancel(callback: CallbackQuery):
+    await callback.message.delete()

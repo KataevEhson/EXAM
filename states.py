@@ -104,38 +104,8 @@ async def get_file_photo_id_state(message : Message , state : FSMContext):
 @router.message(F.text == "menu")
 @router.message(Command("menu"))
 async def menu(message: Message):
-    dishes = await menu_service()
-    if not dishes:
-        return await message.answer("Сорян покачто наш могозин пуст🏪")
-
-    for dish in dishes:
-        buttons = InlineKeyboardMarkup(inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="Подробнее",
-                    callback_data=f"dish:{dish['id']}"
-                ),
-                InlineKeyboardButton(
-                    text="🛒 Добавить",
-                    callback_data=f"cart:{dish['id']}"
-                ),
-                InlineKeyboardButton(
-                    text="➕",
-                    callback_data=f"plus:{dish['id']}"
-                ),
-                InlineKeyboardButton(
-                    text="➖",
-                    callback_data=f"minus:{dish['id']}"
-                ),
-                    InlineKeyboardButton(
-                    text="🗑 Удалить",
-                    callback_data=f"delete:{dish['id']}"
-                )
-                
-            ]
-        ])
-
-        await message.answer(dish["title"], reply_markup=buttons)
+    buttons1 = await get_dish_button()
+    await message.answer("Нажми на блюдо чтобы полючит подробную информацию или чтобы заказатъ: ",reply_markup=buttons1)
 
 
 
@@ -187,19 +157,8 @@ async def clear_cart(message: Message):
 @router.message(F.text == "dish")
 @router.message(Command("dish"))
 async def menu(message: Message):
-    dishes = await menu_service()
-
-    for dish in dishes:
-        buttons = InlineKeyboardMarkup(inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="Подробнее",
-                    callback_data=f"dish:{dish['id']}"
-                ),
-            ]
-        ])
-
-        await message.answer(dish["title"], reply_markup=buttons)
+    buttons1 = await get_dish_info_button()
+    await message.answer("Нажми на блюдо чтобы получит подробнее информацию: ", reply_markup=buttons1)
 
 
 
@@ -214,4 +173,3 @@ async def cart_stats(message: Message):
 
 
 
-# ======================

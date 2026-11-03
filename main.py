@@ -22,7 +22,6 @@ dp = Dispatcher()
 
 
 
-
 @dp.message(F.text == "start")
 @dp.message(Command("start"))
 async def start_bot(message: Message):

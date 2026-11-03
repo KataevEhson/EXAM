@@ -51,9 +51,20 @@ async def get_delete_dishes_button():
 
 
 async def get_dish_info_button():
-    data = await dish_info_for_button()
+    data = await menu_service()
     keyboards = []
-    for category in data:
-        keyboards.append([InlineKeyboardButton(text=f"{category['category_name']}", callback_data=f"category_order_{category['category_id']}")])
+    for i in data:
+        keyboards.append([InlineKeyboardButton(text=f"{i['title']}", callback_data=f"dish_{i['id']}")])
+    keybor = InlineKeyboardMarkup(inline_keyboard=keyboards)
+    return keybor
+
+
+
+
+async def get_dish_button():
+    data = await menu_service()
+    keyboards = []
+    for i in data:
+        keyboards.append([InlineKeyboardButton(text=f"{i['title']}", callback_data=f"dish:{i['id']}")])
     keybor = InlineKeyboardMarkup(inline_keyboard=keyboards)
     return keybor
